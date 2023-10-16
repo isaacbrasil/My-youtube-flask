@@ -19,5 +19,28 @@
       />
       Seu navegador não suporta o elemento de vídeo.
     </video>
+
+    <!-- Carregar o Socket.io -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+      integrity="sha384-Xz4MNd5IrLa1Zf6TFD6sUpK+pjZeedE+r1U2R5Zu3zRn1MD0Fs6ljjWSzvDycVxh"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      var socket = io.connect(
+        "http://" + document.domain + ":" + location.port
+      );
+
+      socket.on("connect", function () {
+        // Uma vez conectado, você pode emitir e ouvir eventos.
+        socket.emit("play_video", { data: "I want to play a video!" });
+      });
+
+      socket.on("message", function (data) {
+        console.log(data); // Isso imprimirá 'This is a message from the server.'
+        // Aqui você colocaria a lógica para renderizar os chunks de vídeo recebidos.
+      });
+    </script>
   </body>
 </html>

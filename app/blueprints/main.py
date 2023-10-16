@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify
 from werkzeug.utils import secure_filename
 from app import app, db
+from app import socketio
 import os
 
 main = Blueprint('main', __name__)
@@ -66,7 +67,12 @@ def play_video(video_id):
     
     return render_template('play_video.html', video=video, mime_type=mime_type)
 
-
+@socketio.on('play_video')
+def handle_message(message):
+    # Aqui você colocaria a lógica de transmitir o vídeo usando sockets.
+    # Por simplicidade, estou apenas enviando uma mensagem de volta.
+    # Na prática, você enviaria chunks do vídeo e os renderizaria no cliente.
+    send('This is a message from the server.', broadcast=True)
 
 
 

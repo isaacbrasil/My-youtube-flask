@@ -1,12 +1,22 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_socketio import SocketIO
 
 app = Flask(__name__)
+
+# Configurações básicas
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///videos.db'
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['ALLOWED_EXTENSIONS'] = {'mp4', 'avi', 'mkv', 'flv'}
 
+# Inicialização das extensões
 db = SQLAlchemy(app)
+socketio = SocketIO(app)
 
-from app.blueprints.main import main as main_blueprint
-app.register_blueprint(main_blueprint)
+# Importação dos blueprints
+from app.blueprints import main
+
+# Registro dos blueprints
+app.register_blueprint(main.main)
+
+# Este arquivo não deve conter as rotas diretamente, elas devem estar em seus respectivos blueprints.
