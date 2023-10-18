@@ -4,8 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
       rel="stylesheet"
-      href="{{ url_for('static', filename='static/styles.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
     />
 
     <title>Reproduzir Vídeo</title>
@@ -19,7 +23,9 @@
       />
       Seu navegador não suporta o elemento de vídeo.
     </video>
-
+    <button>
+      <a href="{{ url_for('main.list_videos') }}" class="btn">Voltar</a>
+    </button>
     <!-- Carregar o Socket.io -->
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"

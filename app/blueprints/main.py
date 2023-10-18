@@ -42,10 +42,10 @@ def upload_file():
         new_video = Video(filename=filename)
         db.session.add(new_video)
         db.session.commit()
-        return jsonify({"message": "File uploaded successfully"}), 200
+        return jsonify({"message": "Arquivo upado com sucesso!"}), 200
     return jsonify({"error": "Invalid file type"}), 400
 
-@main.route('/show_upload', methods=['GET'])
+@main.route('/', methods=['GET'])
 def show_upload():
     return render_template('upload.html')
 

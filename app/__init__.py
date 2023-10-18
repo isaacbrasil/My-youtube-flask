@@ -6,8 +6,10 @@ app = Flask(__name__)
 
 # Configurações básicas
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///videos.db'
-app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['UPLOAD_FOLDER'] = 'app/static/uploads'
+app.config['THUMBNAIL_FOLDER'] = 'app/static/thumbnails'
 app.config['ALLOWED_EXTENSIONS'] = {'mp4', 'avi', 'mkv', 'flv'}
+
 
 # Inicialização das extensões
 db = SQLAlchemy(app)

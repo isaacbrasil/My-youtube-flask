@@ -4,63 +4,71 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
       rel="stylesheet"
-      href="{{ url_for('static', filename='static/styles.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
     />
 
     <title>Upload de Vídeo</title>
   </head>
   <body>
-    <h2>Upload de Vídeo</h2>
+    <div class="container">
+      <h2>Upload de Vídeo</h2>
 
-    <form id="uploadForm" enctype="multipart/form-data">
-      <label for="videoFile">Selecione um vídeo:</label>
-      <input
-        type="file"
-        id="videoFile"
-        name="file"
-        accept="video/*"
-        required
-      /><br /><br />
+      <form id="uploadForm" enctype="multipart/form-data">
+        <label for="videoFile">Selecione um vídeo:</label>
+        <input
+          type="file"
+          id="videoFile"
+          name="file"
+          accept="video/*"
+          required
+        /><br /><br />
 
-      <label for="description">Descrição (opcional):</label>
-      <textarea
-        id="description"
-        name="description"
-        rows="4"
-        cols="50"
-      ></textarea
-      ><br /><br />
+        <label for="description">Descrição (opcional):</label>
+        <textarea
+          id="description"
+          name="description"
+          rows="4"
+          cols="50"
+        ></textarea
+        ><br /><br />
+        <button>
+          <input type="submit" value="Upload" />
+        </button>
+      </form>
+      <button>
+        <a href="{{ url_for('main.list_videos') }}" class="btn"
+          >Vídeos Carregados</a
+        >
+      </button>
 
-      <input type="submit" value="Upload" />
-    </form>
+      <div id="response"></div>
 
-    <a href="{{ url_for('main.list_videos') }}" class="btn"
-      >Vídeos Carregados</a
-    >
-
-    <div id="response"></div>
-
-    <script>
-      document
-        .getElementById("uploadForm")
-        .addEventListener("submit", function (event) {
-          event.preventDefault();
-          var formData = new FormData(event.target);
-          fetch("/upload", {
-            method: "POST",
-            body: formData,
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              document.getElementById("response").textContent = data.message;
+      <script>
+        document
+          .getElementById("uploadForm")
+          .addEventListener("submit", function (event) {
+            event.preventDefault();
+            var formData = new FormData(event.target);
+            fetch("/upload", {
+              method: "POST",
+              body: formData,
             })
-            .catch((error) => {
-              console.error("Error:", error);
-              document.getElementById("response").textContent =
-                "Erro ao fazer o upload.";
-            });
-        });
-    </script>
+              .then((response) => response.json())
+              .then((data) => {
+                document.getElementById("response").textContent = data.message;
+              })
+              .catch((error) => {
+                console.error("Error:", error);
+                document.getElementById("response").textContent =
+                  "Erro ao fazer o upload.";
+              });
+          });
+      </script>
+    </div>
   </body>
 </html>

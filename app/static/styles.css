@@ -1,26 +1,127 @@
-/* static/css/styles.css */
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
 
-.btn {
-  display: inline-block;
+.container {
+  background-color: #fff;
+  width: 80%;
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+label {
+  font-weight: 400;
+  margin-bottom: 10px;
+  display: block;
+  color: #555;
+}
+
+input[type="file"],
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+button {
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  background-color: #f5f5f5;
+  color: #111;
+  border: none;
+  border-radius: 4px;
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 15px;
+}
+
+button:hover {
+  background-color: #c2c2c2;
+}
+
+button:active {
+  background-color: #c2c2c2;
+}
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.video-card {
+  display: flex;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.3s;
+  justify-content: center;
+}
+
+.video-card:hover {
+  transform: scale(1.05);
+}
+
+.video-thumbnail {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.video-title {
+  padding: 10px;
   text-align: center;
-  text-decoration: none;
-  outline: none;
-  color: #fff;
-  background-color: #4caf50;
-  border: none;
-  border-radius: 15px;
-  box-shadow: 0 9px #999;
+  font-weight: 500;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.btn:hover {
-  background-color: #3e8e41;
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+  background: none; /* Remove o fundo padrão */
+  border: none; /* Remove a borda */
+  padding: 0; /* Remove o espaçamento interno */
+  margin: 0; /* Remove a margem */
+  outline: none; /* Remove o contorno quando focado */
+  box-shadow: none; /* Remove sombras */
+  cursor: pointer; /* Mantém o cursor como ponteiro */
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  font-size: inherit; /* Usa o tamanho de fonte do elemento pai */
+  color: inherit; /* Usa a cor de texto do elemento pai */
 }
 
-.btn:active {
-  background-color: #3e8e41;
-  box-shadow: 0 5px #666;
-  transform: translateY(4px);
+input[type="file"] {
+  box-shadow: none;
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
 }

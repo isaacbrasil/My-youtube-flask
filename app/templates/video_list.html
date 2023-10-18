@@ -4,22 +4,37 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
       rel="stylesheet"
-      href="{{ url_for('static', filename='static/styles.css') }}"
     />
-
-    <title>Lista de Vídeos</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <title>Vídeos Carregados</title>
   </head>
   <body>
-    <h2>Vídeos Carregados</h2>
-    <ul>
-      {% for video in videos %}
-      <li>
-        <a href="{{ url_for('main.play_video', video_id=video.id) }}"
-          >{{ video.filename }}</a
-        >
-      </li>
-      {% endfor %}
-    </ul>
+    <div class="container">
+      <h2>Vídeos Carregados</h2>
+      <button>
+        <a href="{{ url_for('main.show_upload') }}" class="btn">Voltar</a>
+      </button>
+      <div class="video-grid">
+        {% for video in videos %}
+        <div class="video-card">
+          <a href="{{ url_for('main.play_video', video_id=video.id) }}"
+            >{{ video.id }}</a
+          >
+        </div>
+        <script>
+          console.log({
+            id: "{{ video.id }}",
+            filename: "{{ video.filename }}",
+            // Add other properties of the video object if needed
+          });
+        </script>
+        {% endfor %}
+      </div>
+    </div>
   </body>
 </html>
