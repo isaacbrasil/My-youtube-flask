@@ -37,15 +37,23 @@
       var socket = io.connect(
         "http://" + document.domain + ":" + location.port
       );
+      var videoData = []; // Array para armazenar os chunks
+
+      var videoId = parseInt("{{ video.id }}"); // Converta o ID do vídeo em um número e Armazena o ID do vídeo em uma variável JavaScript
 
       socket.on("connect", function () {
-        // Uma vez conectado, você pode emitir e ouvir eventos.
-        socket.emit("play_video", { data: "I want to play a video!" });
+        socket.emit("start_stream", videoId);
       });
 
-      socket.on("message", function (data) {
-        console.log(data); // Isso imprimirá 'This is a message from the server.'
-        // Aqui você colocaria a lógica para renderizar os chunks de vídeo recebidos.
+      socket.on("video_chunk", function (chunk) {
+        videoData.push(new Uint8Array(chunk));
+
+        const blob = new Blob(videoData, { type: "video/mp4" }); // Assumindo mp4, ajuste conforme necessário
+        document.getElementById("videoPlayer").src = URL.createObjectURL(blob);
+      });
+
+      socket.on("video_stream_end", function () {
+        console.log("Transmissão finalizada.");
       });
     </script>
   </body>

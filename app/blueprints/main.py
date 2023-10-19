@@ -1,5 +1,6 @@
 from flask import Blueprint, abort, flash, redirect, render_template, request, jsonify, url_for
 from werkzeug.utils import secure_filename
+from flask_socketio import SocketIO, emit
 from app import app, db
 from app import socketio
 import os
@@ -55,17 +56,45 @@ def list_videos():
     return render_template('video_list.html', videos=videos)
     #return jsonify([video.filename for video in videos]), 200
 
+# @main.route('/play/<int:video_id>', methods=['GET'])
+# def play_video(video_id):
+#     video = Video.query.get(video_id)
+#     if not video:
+#         abort(404)  # Se o vídeo não for encontrado, retorne um erro 404
+    
+#     # Determinar o tipo MIME
+#     file_extension = video.filename.rsplit('.', 1)[1].lower()  # Obtenha a extensão do arquivo
+#     mime_type = MIME_TYPES.get(file_extension, "video/mp4")  # Use um tipo padrão se a extensão não for reconhecida
+    
+#     return render_template('play_video.html', video=video, mime_type=mime_type)
+
 @main.route('/play/<int:video_id>', methods=['GET'])
 def play_video(video_id):
     video = Video.query.get(video_id)
     if not video:
         abort(404)  # Se o vídeo não for encontrado, retorne um erro 404
+
+    return render_template('play_video.html', video=video)
+
+@socketio.on('start_stream')
+def handle_start_stream(video_id):
+    video = Video.query.get(video_id)
+    if not video:
+        emit('video_stream_end')
+        return
+
+    video_path = os.path.join(app.config['UPLOAD_FOLDER'], video.filename)
     
-    # Determinar o tipo MIME
-    file_extension = video.filename.rsplit('.', 1)[1].lower()  # Obtenha a extensão do arquivo
-    mime_type = MIME_TYPES.get(file_extension, "video/mp4")  # Use um tipo padrão se a extensão não for reconhecida
-    
-    return render_template('play_video.html', video=video, mime_type=mime_type)
+    with open(video_path, 'rb') as f:
+        while True:
+            chunk = f.read(4096)  # ler em pedaços de 4KB
+            if not chunk:
+                break
+            emit('video_chunk', chunk)
+        
+    emit('video_stream_end')
+
+
 
 @main.route('/delete_video/<int:video_id>', methods=['POST'])
 def delete_video(video_id):
