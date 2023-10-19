@@ -10,7 +10,7 @@ body {
   width: 80%;
   max-width: 600px;
   margin: 50px auto;
-  padding: 30px;
+  padding: 50px;
   border-radius: 8px;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
 }
@@ -43,7 +43,7 @@ textarea {
   font-size: 16px;
 }
 
-button {
+.button-default {
   font-family: "Roboto", sans-serif;
   font-weight: 500;
   background-color: #f5f5f5;
@@ -64,11 +64,6 @@ button:hover {
 button:active {
   background-color: #c2c2c2;
 }
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
 
 .video-grid {
   display: grid;
@@ -78,6 +73,7 @@ button:active {
 
 .video-card {
   display: flex;
+  height: 150px;
   background-color: #f5f5f5;
   border-radius: 8px;
   overflow: hidden;
@@ -124,4 +120,19 @@ input[type="file"] {
   box-shadow: none;
   font-family: "Roboto", sans-serif;
   font-weight: 500;
+}
+
+.delete-button {
+  font-size: 20px;
+  background: none;
+  display: flex;
+  justify-content: end;
+  color: #f44336; /* Cor do texto e ícone */
+  border: none; /* Remove a borda padrão */
+  cursor: pointer; /* Muda o cursor para indicar que é clicável */
+}
+
+.delete-button:hover {
+  background-color: #f5f5f5;
+  color: #da190b; /* Vermelho mais escuro ao passar o mouse */
 }

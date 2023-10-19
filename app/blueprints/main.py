@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, abort, flash, redirect, render_template, request, jsonify, url_for
 from werkzeug.utils import secure_filename
 from app import app, db
 from app import socketio
@@ -66,6 +66,20 @@ def play_video(video_id):
     mime_type = MIME_TYPES.get(file_extension, "video/mp4")  # Use um tipo padrão se a extensão não for reconhecida
     
     return render_template('play_video.html', video=video, mime_type=mime_type)
+
+@main.route('/delete_video/<int:video_id>', methods=['POST'])
+def delete_video(video_id):
+    video = Video.query.get(video_id)
+    if video:
+        db.session.delete(video)
+        db.session.commit()
+        return redirect(url_for('main.list_videos'))
+    else:
+        # Caso o vídeo não seja encontrado no banco de dados
+        flash('Vídeo não encontrado', 'error')
+        return redirect(url_for('main.list_videos'))
+
+
 
 @socketio.on('play_video')
 def handle_message(message):
