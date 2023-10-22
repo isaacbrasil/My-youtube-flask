@@ -16,7 +16,7 @@
   </head>
   <body>
     <h2>Reproduzindo: {{ video.filename }}</h2>
-    <video width="320" height="240" controls>
+    <video id="videoPlayer" width="320" height="240" controls>
       <source
         src="{{ url_for('static', filename='uploads/' + video.filename) }}"
         type="{{ mime_type }}"
@@ -34,27 +34,34 @@
     ></script>
 
     <script>
-      var socket = io.connect(
-        "http://" + document.domain + ":" + location.port
-      );
-      var videoData = []; // Array para armazenar os chunks
-
+      var videoName = "{{ video.filename }}";
+      var socket = new WebSocket("ws://localhost:5678/" + videoName);
+      var videoData = [];
+      var videoPlayer = document.getElementById("videoPlayer");
       var videoId = parseInt("{{ video.id }}"); // Converta o ID do vídeo em um número e Armazena o ID do vídeo em uma variável JavaScript
 
-      socket.on("connect", function () {
-        socket.emit("start_stream", videoId);
-      });
+      socket.onopen = function (event) {
+        console.log("Conexão aberta:", event);
+      };
 
-      socket.on("video_chunk", function (chunk) {
-        videoData.push(new Uint8Array(chunk));
+      socket.onmessage = function (event) {
+        videoData.push(event.data);
+        const blob = new Blob(videoData, { type: "video/mp4" });
+        videoPlayer.src = URL.createObjectURL(blob);
+        videoPlayer.play();
+      };
 
-        const blob = new Blob(videoData, { type: "video/mp4" }); // Assumindo mp4, ajuste conforme necessário
-        document.getElementById("videoPlayer").src = URL.createObjectURL(blob);
-      });
+      socket.onerror = function (error) {
+        console.log("Erro:", error);
+      };
 
-      socket.on("video_stream_end", function () {
-        console.log("Transmissão finalizada.");
-      });
+      socket.onclose = function (event) {
+        if (event.wasClean) {
+          console.log("Conexão fechada limpa", event.reason);
+        } else {
+          console.log("Desconexão", event.reason);
+        }
+      };
     </script>
   </body>
 </html>
