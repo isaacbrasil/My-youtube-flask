@@ -1,5 +1,6 @@
 from flask import Blueprint, abort, flash, redirect, render_template, request, jsonify, url_for
 from werkzeug.utils import secure_filename
+import socket
 from flask_socketio import SocketIO, emit
 from app import app, db
 from app import socketio
@@ -30,6 +31,9 @@ with app.app_context():
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
+
+CHUNK_SIZE = 1024  # Define o tamanho do pacote. Pode ser ajustado conforme necessário.
+
 @main.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
@@ -43,9 +47,34 @@ def upload_file():
         new_video = Video(filename=filename)
         db.session.add(new_video)
         db.session.commit()
-        return jsonify({"message": "Arquivo upado com sucesso!"}), 200
-    return jsonify({"error": "Invalid file type"}), 400
+    #     return jsonify({"message": "Arquivo upado com sucesso!"}), 200
+    # return jsonify({"error": "Invalid file type"}), 400
 
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client.connect(("localhost", 9999))
+
+    file_size = os.path.getsize(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    client.send(str(file_size).encode().zfill(10))  # enviando o tamanho do arquivo como uma string de tamanho 10
+    
+    # Enviando o tamanho do nome do arquivo
+    client.send(str(len(filename)).encode().zfill(10))
+    
+    # Enviando o nome do arquivo
+    client.send(filename.encode())
+
+    file.seek(0)
+
+
+    while True:
+        chunk = file.read(CHUNK_SIZE)
+        if not chunk:
+            break  # Fim do arquivo
+        client.sendall(chunk)
+    
+    client.close()
+    return "File uploaded successfully! You can now upload another file."
+
+        
 @main.route('/', methods=['GET'])
 def show_upload():
     return render_template('upload.html')

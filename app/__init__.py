@@ -16,9 +16,9 @@ db = SQLAlchemy(app)
 socketio = SocketIO(app)
 
 # Importação dos blueprints
-from app.blueprints import main
+from app.blueprints import client
 
 # Registro dos blueprints
-app.register_blueprint(main.main)
+app.register_blueprint(client.main)
 
 # Este arquivo não deve conter as rotas diretamente, elas devem estar em seus respectivos blueprints.
