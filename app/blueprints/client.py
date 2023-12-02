@@ -3,8 +3,7 @@ from flask import Blueprint, abort, flash, redirect, render_template, request, j
 from werkzeug.utils import secure_filename
 import socket
 from flask_socketio import SocketIO, emit
-from app import app, db
-from app import socketio
+from app import app, db, socketio
 import os
 import time
 
