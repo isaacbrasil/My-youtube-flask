@@ -1,7 +1,7 @@
 import socket
 import os
 
-SERVER_IP = "localhost"
+SERVER_IP = "192.168.0.18"
 SERVER_PORT = 9999
 BUFFER_SIZE = 4096
 SAVE_DIR = "received_files"

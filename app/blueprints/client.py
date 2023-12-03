@@ -55,7 +55,7 @@ def upload_file():
     # return jsonify({"error": "Invalid file type"}), 400
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(("localhost", 9999))
+    client.connect((HOST, 9999))
     
         # Enviar comando UPLOAD
     header = f"UPLOAD"
@@ -101,7 +101,7 @@ def play_video(video_id):
     video_name = video.filename  # supondo que filename é um atributo do modelo Video
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(("localhost", 9999))
+    client.connect((HOST, 9999))
 
     header = f"STREAM"
     client.send(header.encode())
