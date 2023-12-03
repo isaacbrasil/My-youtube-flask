@@ -1,11 +1,10 @@
 import socket
 import os
 
-SERVER_IP = "192.168.0.18"
+SERVER_IP = socket.gethostbyname(socket.gethostname())
 SERVER_PORT = 9999
 BUFFER_SIZE = 4096
 SAVE_DIR = "received_files"
-
 
 def handle_client(client, addr):
     header_method = client.recv(6).decode('utf-8', 'ignore')

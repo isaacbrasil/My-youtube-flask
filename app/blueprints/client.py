@@ -19,7 +19,6 @@ MIME_TYPES = {
     "mkv": "video/x-matroska",
     "flv": "video/x-flv"
 }
-
 # Modelo para metadados de vídeo no banco de dados
 class Video(db.Model):
     __tablename__ = 'video'
