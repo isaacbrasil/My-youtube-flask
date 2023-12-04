@@ -11,6 +11,10 @@ HOST = "127.0.1.1"
 WEBSOCKET_PORT = 9999
 CHUNK_SIZE = 4096  # Define o tamanho do pacote. Pode ser ajustado conforme necessário.
 
+# Lista de endereços IP dos servidores para armazenamento de réplicas
+REPLICA_SERVERS = [HOST, HOST, HOST] #ips locais mockados
+#REPLICA_SERVERS = ["192.168.1.2", "192.168.1.3", "192.168.1.4"]  # IPs das máquinas das réplicas
+
 main = Blueprint('main', __name__)
 
 MIME_TYPES = {
@@ -23,7 +27,6 @@ MIME_TYPES = {
 class StreamingError(Exception):
     """Exceção personalizada para erros de streaming."""
     pass
-
 
 class Video(db.Model):
     __tablename__ = 'video'
@@ -39,48 +42,46 @@ with app.app_context():
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
+def upload_to_replica(filename, file_content):
+    for server_ip in REPLICA_SERVERS:
+        try:
+            client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client.connect((server_ip, WEBSOCKET_PORT))
+            # Enviar comando UPLOAD
+            header = f"UPLOAD"
+            client.send(header.encode())
+            # Enviar tamanho do arquivo como uma string de tamanho 10
+            client.send(str(len(file_content)).encode().zfill(10))
+            # Enviar tamanho do nome do arquivo
+            client.send(str(len(filename)).encode().zfill(10))
+            # Enviar nome do arquivo
+            client.send(filename.encode())
+            # Enviar os dados do arquivo
+            client.sendall(file_content)
+            client.close()
+        except Exception as e:
+            print(f"Erro ao enviar para servidor {server_ip}: {e}")
+
 @main.route('/upload', methods=['POST'])
 def upload_file():
-     if 'file' not in request.files:
+    if 'file' not in request.files:
         return jsonify({"error": "No file provided"}), 400
-     file = request.files['file']
-     if file.filename == '':
+    file = request.files['file']
+    if file.filename == '':
         return jsonify({"error": "No file selected"}), 400
-     if file and allowed_file(file.filename):
+    if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(file_path)
         new_video = Video(filename=filename)
         db.session.add(new_video)
         db.session.commit()
-    #     return jsonify({"message": "Arquivo upado com sucesso!"}), 200
-    # return jsonify({"error": "Invalid file type"}), 400
-     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-     client.connect((HOST, 9999))
-    
-         # Enviar comando UPLOAD
-     header = f"UPLOAD"
-     client.send(header.encode())
-    
-    # Enviar tamanho do arquivo como uma string de tamanho 10
-     file_size = os.path.getsize(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-     client.send(str(file_size).encode().zfill(10))
 
-    # Enviar tamanho do nome do arquivo
-     client.send(str(len(filename)).encode().zfill(10))
-
-    # Enviar nome do arquivo
-     client.send(filename.encode())
-    
-    # Resetar ponteiro do arquivo e enviar seus dados
-     file.seek(0)
-     while True:
-        chunk = file.read(CHUNK_SIZE)
-        if not chunk:
-            break  # Fim do arquivo
-        client.sendall(chunk)
-
-     client.close()
-     return "File uploaded successfully! You can now upload another file."
+        with open(file_path, 'rb') as f:
+            file_content = f.read()
+        upload_to_replica(filename, file_content)
+        return "File uploaded successfully! You can now upload another file."
+    return jsonify({"error": "Invalid file type"}), 400
 
 @main.route('/', methods=['GET'])
 def show_upload():
@@ -129,8 +130,8 @@ def stream_video(video_name):
         return Response(generate(), content_type=mime_type)
     
     except ConnectionError:
-            # Esta exceção pode ser lançada se houver um problema de conexão de rede
-            raise StreamingError("Erro de conexão durante o streaming do vídeo")
+        # Esta exceção pode ser lançada se houver um problema de conexão de rede
+        raise StreamingError("Erro de conexão durante o streaming do vídeo")
 
 @main.route('/delete_video/<int:video_id>', methods=['POST'])
 def delete_video(video_id):
