@@ -2,7 +2,7 @@ import socket
 import os
 import shutil
 
-SERVER_IP = "127.0.1.1"  # Atualize para o IP real do servidor
+SERVER_IP = "127.0.1.1"  # socket.gethostbyname(socket.gethostname())
 SERVER_PORT = 9999
 BUFFER_SIZE = 4096
 SAVE_DIR = "received_files"
