@@ -1,10 +1,16 @@
 import socket
 import os
+import shutil
 
-SERVER_IP = socket.gethostbyname(socket.gethostname())
+SERVER_IP = "127.0.1.1" #socket.gethostbyname(socket.gethostname())
 SERVER_PORT = 9999
 BUFFER_SIZE = 4096
 SAVE_DIR = "received_files"
+
+
+print("IP DA MÁQUINA:" + socket.gethostbyname(socket.gethostname()))
+# Dicionário para armazenar a localização das réplicas
+video_replicas = {}
 
 def handle_client(client, addr):
     header_method = client.recv(6).decode('utf-8', 'ignore')
@@ -18,8 +24,11 @@ def handle_client(client, addr):
         filename_size = int(filename_size_data)
         filename = client.recv(filename_size).decode('utf-8', 'ignore')
 
-        if os.path.exists(os.path.join(SAVE_DIR, filename)):  # Usando os.path.join aqui
-            serve_file(client, filename)
+        # Modificado para verificar todas as réplicas
+        for replica_path in video_replicas.get(filename, []):
+            if os.path.exists(replica_path):
+                serve_file(client, replica_path)
+                break
         else:
             response = "ERROR"
             client.send(response.encode())
@@ -50,12 +59,24 @@ def upload_file(client_socket):
             f.write(data)
 
     print(f"File {file_name} received and saved to {save_path}.")  
+
+    # Simulando a criação de réplicas
+    replica_locations = [f"{SAVE_DIR}/replica1/{file_name}", 
+                         f"{SAVE_DIR}/replica2/{file_name}", 
+                         f"{SAVE_DIR}/replica3/{file_name}"]
+    for location in replica_locations:
+        os.makedirs(os.path.dirname(location), exist_ok=True)
+        shutil.copyfile(save_path, location)
+
+    # Atualizando o dicionário de réplicas
+    video_replicas[file_name] = replica_locations
+
     client_socket.close()
 
 
-def serve_file(client, filename):
+def serve_file(client, filepath):
     try:
-        with open(os.path.join(SAVE_DIR, filename), 'rb') as file:
+        with open(filepath, 'rb') as file:
             while True:
                 chunk = file.read(BUFFER_SIZE)
                 if not chunk:
